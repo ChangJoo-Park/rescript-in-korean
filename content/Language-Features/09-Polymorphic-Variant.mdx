@@ -1,28 +1,33 @@
 ---
-title: 'Polymorphic Variant'
-metaTitle: 'Polymorphic Variant'
-metaDescription: 'The Polymorphic Variant data structure in ReScript'
+title: '폴리모픽 배리언트'
+metaTitle: '폴리모픽 배리언트'
+metaDescription: 'ReScript의 폴리모픽 배리언트 자료구조'
 sourceUrl: https://rescript-lang.org/docs/manual/latest/polymorphic-variant
 canonical: https://rescript-lang.org/docs/manual/latest/polymorphic-variant
 ---
 
-Now that we know what [variant types](./variant) are, let's dive into a more specific version, so called polymorphic variants (or poly variants).
+이제 [배리언트 타입](./variant)을 알고 있으므로, 조금 더 구체적인 내용인 폴리모픽 배리언트(또는 폴리 배리언트) 살펴보겠습니다.
 
-First off, here are some key features:
+우선, 다음 주요 기능이 있습니다.
 
 - Poly variants are structurally typed, which means they don't require any explicit type definition to be used as a value, and are not coupled to any specific module. The compiler will infer the type on demand, and compare poly variants by their value, instead of their type name (which would be called nominal typing).
+- 폴리모픽 배리언트는 구조적으로 타입이 지정됩니다. 명시적인 타입 정의가 필요하지 않으며, 특정 모듈에 결합되지 않습니다. 컴파일러는 온디멘드로 타입을 추론하고 타입 이름(노멀 타이핑이라고 부릅니다) 대신 값으로 폴리모픽 배리언트를 비교합니다.
+
 - They allow easier JavaScript interop (compile to strings / objects with predictable `NAME` and `VAL` attribute) and don't need explicit runtime conversions, unlike common variants.
+- 일반적인 배리언트와 달리, 더 쉬운 자바스크립트 인터롭(문자열/예측 가능한 `NAME`과 `VAL` 속성을 이용한 객체로 컴파일)이 가능하며 명시적인 런타임 변환이 필요하지 않습니다.
+
 - Due to their structural nature, poly variant types may cause tricky type checking errors when types don't match up.
+- 태생적인 구조적인 특성으로 인하여, 폴리모픽 배리언트 타입은 타입이 일치하지 않으면 까다롭게 에러를 발생합니다.
 
-## Basics
+## 기초
 
-Here is how you'd construct a poly variant value:
+폴리모픽 배리언트를 만드는 방법입니다.
 
 <CodeTab labels={["ReScript", "JS Output"]}>
 
 ```res
-// Note how a poly variant starts with a hashtag (#)
-// We also don't need any explicit type definition
+// 폴리모픽 배리언트는 해시태그(#)로 시작합니다
+// 명시적인 타입 정의가 필요하지 않습니다.
 let myColor = #Red
 ```
 
@@ -32,14 +37,14 @@ var myColor = "Red";
 
 </CodeTab>
 
-This is how you'd define a closed poly variant type with an exact set of constructors:
+다음은 정확한 생성자 셋으로 닫혀있는 폴리모픽 배리언트를 정의하는 방법입니다.
 
 ```res
-// Note the surrounding square brackets, and # for constructors
+// 대괄호와 생성자를 위한 # 을 확인하세요
 type color = [ #Red | #Green | #Blue ]
 ```
 
-We can also use poly variant types in annotations without an explicit type definition:
+명시적인 타입 정의 없이 어노테이션으로 폴리모픽 배리언트를 사용할 수도 있습니다.
 
 <CodeTab labels={["ReScript", "JS Output"]}>
 
@@ -63,9 +68,9 @@ var color = "Red";
 
 </CodeTab>
 
-### Constructor Names
+### 생성자 이름
 
-Poly variant constructor names are less restrictive than in common variants (e.g. they don't need to be capitalized):
+폴리모픽 배리언트 생성자 이름은 보통의 배리언트보다 제약이 적습니다. (예를 들면, 대문자로 시작하지 않아도 됩니다.)
 
 <CodeTab labels={["ReScript", "JS Output"]}>
 
@@ -81,7 +86,7 @@ var admin = "admin";
 
 </CodeTab>
 
-In rare cases (mostly for JS interop reasons), it's also possible to define "invalid identifiers", such as hypens or numbers:
+드문 경우지만(대부분 자바스크립트 인터롭을 위해), 하이픈이나 숫자같은 "올바르지 않은 식별자"를 정의할 수 있습니다.
 
 <CodeTab labels={["ReScript", "JS Output"]}>
 
@@ -98,11 +103,12 @@ var oneA = "1a";
 
 </CodeTab>
 
-**Note:** The `\` character will be dropped in future ReScript versions for a cleaner look (`#"1"`).
+**참고:** `\` 는 더 보기 좋은 코드를 위하여 미래의 ReScript 버전에서 없앨 것 입니다. (`#"1"`).
 
-### Constructor Arguments
 
-This is equivalent to what we've [already learned](variant#constructor-arguments) with common variants:
+### 생성자 인자
+
+우리가 [이미 알고 있는](variant#constructor-arguments) 일반적인 배리언트와 같습니다.
 
 <CodeTab labels={["ReScript", "JS Output"]}>
 
@@ -125,7 +131,7 @@ var acc = {
 
 </CodeTab>
 
-### Compose and Pattern Match Poly Variants
+### 폴리모픽 배리언트의 함성과 패턴 매치
 
 You can use poly variant types within other poly variant types to create a sum of all constructors:
 
@@ -182,7 +188,7 @@ switch #Papayawhip {
 }
 ```
 
-### Recursive Type Definitions
+### 타입 정의 재귀
 
 Poly variant types are non-recursive by default. Use the `rec` keyword to allow recursion:
 
@@ -210,7 +216,7 @@ var content = {
 
 </CodeTab>
 
-### Annotations with Closed / Upper / Lower Bound Constraints
+### 닫힌 / 상한 / 하한이 있는 어노테이션
 
 There's also a way to define an "upper" and "lower" bound constraint for a poly variant type. Here is what it looks like in a type annotation:
 
@@ -230,7 +236,7 @@ let background: [< #Red | #Blue] = #Red
 Don't worry about the upper / lower bound feature just yet, since this is a very advanced topic that's often not really needed. For the sake of completeness, we mention a few details about it [later on](#lower--upper-bound-constraints).
 
 
-## Polymorphic Variants are Structurally Typed
+## 폴리모픽 배리언트는 구조적인 타입을 가집니다
 
 As we've already seen in the section above, poly variants don't need any explicit type definition to be used as a value.
 
@@ -278,7 +284,7 @@ let all = Belt.Array.concat(colors, other)
 
 We'd get an error on the `concat` call, even thought the error was actually caused by the typo in the value assignment of `other`.
 
-## JavaScript Output
+## 자바스크립트 출력
 
 Poly variants are a [shared data structure](./shared-data-types), so they are very useful to bind to JavaScript. It is safe to rely on its compiled JS structure.
 
@@ -317,7 +323,7 @@ var num = "1";
 </CodeTab>
 
 
-### Bind to JS Functions
+### 자바스크립트 함수에 바인딩
 
 Poly variants play an important role for binding to functions in JavaScript.
 
@@ -352,7 +358,7 @@ The JS Output is practically identical to handwritten JS, but we also get to enj
 More usage examples for poly variant interop can be found in [Bind to JS Function](bind-to-js-function#constrain-arguments-better) and [Generate Converters and Helper](generate-converters-accessors#generate-converters-for-js-string-enums-and-polymorphic-variants).
 
 
-### Bind to String Enums
+### 문자열 열거형에 바인딩
 
 Let's assume we have a TypeScript module that expresses following (stringly typed) enum export:
 
@@ -388,13 +394,13 @@ var myDirection = DirectionJs.myDirection;
 
 Again: since we were using poly variants, the JS Output is practically zero-cost and doesn't add any extra code!
 
-## Lower / Upper Bound Constraints
+## 상한 그리고 하한
 
 There are a few different ways to define constraints on a poly variant type, such as `[>`, `[<` and `[`. Some of them were briefly mentioned before, so in this section we will quickly explain what this syntax is about.
 
 **Note:** We added this info for educational purposes. In most cases you will not want to use any of this stuff, since it makes your APIs pretty unreadable / hard to use.
 
-### Closed ([)
+### 닫힘 ([)
 
 This is the simplest poly variant definition, and also the most practical one. Like a common variant type, this one defines an exact set of constructors.
 
@@ -408,7 +414,7 @@ In the example above, `color` will only allow one of the three constructors that
 
 In case you want to define a type that is extensible in polymorphic ways (or in other words, subtyping allowed sets of constructors), you'll need to use the lower / upper bound syntax.
 
-### Lower Bound ([>)
+### 하한 ([>)
 
 A lower bound defines the minimum set of constructors a poly variant type is aware of. It is also considered an "open poly variant type", because it doesn't restrict any additional values.
 
@@ -428,7 +434,7 @@ Here, the compiler will enforce the user to define `#Blue | #DeepBlue | #LightBl
 
 **Note:** Since we want to define an extensible poly variant, we need to provide a type placeholder `<'a>`, and also add `as 'a` after the poly variant declaration, which essentially means: "Given type `'a` is constraint to the minimum set of constructors (`#Blue | #DeepBlue | #LightBlue`) defined in `basicBlueTone`".
 
-### Upper Bound ([<)
+### 상한 ([<)
 
 The upper bound works in the opposite way than a lower bound: the extending type may only use constructors that are stated in the upper bound constraint.
 
@@ -442,7 +448,7 @@ type myReds = validRed<[#Ash]>
 type notWorking = validRed<[#Purple]>
 ```
 
-## Variant vs Polymorphic Variant
+## 배리언트 vs 폴리모픽 배리언트
 
 One might think that polymorphic variants are fastly superior to common [variants](./variant). As always, it depends on the use case:
 
